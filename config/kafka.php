@@ -3,19 +3,28 @@
 /**
  * This is an example of queue connection configuration.
  * It will be merged into config/queue.php.
- * You need to set proper values in `.env`
+ * You need to set proper values in `.env`.
  */
 return [
 
+    /**
+     * Driver name
+     */
     'driver' => 'kafka',
 
     /*
      * The name of default queue.
      */
-    'queue' => env('KAFKA_QUEUE', 'test1'),
+    'queue' => env('KAFKA_QUEUE', 'default'),
 
+    /**
+     * The group of where the consumer in resides.
+     */
+    'consumer_group_id' => env('KAFKA_CONSUMER_GROUP_ID', 'laravel_queue'),
 
-    'consumer_group_id' => 'php-pubsub',
+    /**
+     * Address of the Kafka broker
+     */
     'brokers' => env('KAFKA_BROKERS', 'localhost'),
 
     /*

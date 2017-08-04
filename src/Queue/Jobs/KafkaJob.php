@@ -28,19 +28,15 @@ class KafkaJob extends Job implements JobContract
 
     /**
      * KafkaJob constructor.
-     * @param Container $container
-     * @param KafkaQueue $connection
-     * @param Message $message
-     * @param $queue
+     * @param KafkaQueue    $connection
+     * @param Message       $message
+     * @param               $queue
      */
     public function __construct(
-        Container $container,
         KafkaQueue $connection,
         Message $message,
         $queue
-    )
-    {
-        $this->container = $container;
+    ){
         $this->connection = $connection;
         $this->queue = $queue;
         $this->message = $message;

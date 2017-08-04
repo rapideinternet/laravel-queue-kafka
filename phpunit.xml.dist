@@ -17,7 +17,7 @@
     </testsuites>
     <php>
         <env name="HOST" value="127.0.0.1"/>
-        <env name="PORT" value="5672"/>
+        <env name="PORT" value="9092"/>
     </php>
     <filter>
         <whitelist>
