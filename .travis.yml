@@ -9,6 +9,7 @@ services:
   - kafka
 
 before_script:
+  - pecl install rdkafka
   - composer self-update
   - composer install --no-interaction
 script:

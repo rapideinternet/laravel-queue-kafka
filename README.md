@@ -1,7 +1,7 @@
 Kafka Queue driver for Laravel
 ======================
 [![Latest Stable Version](https://poser.pugx.org/rapide/laravel-queue-kafka/v/stable?format=flat-square)](https://packagist.org/packages/rapide/laravel-queue-kafka)
-[![Build Status](https://img.shields.io/travis/rapide/laravel-queue-kafka.svg?style=flat-square)](https://travis-ci.org/rapide/laravel-queue-kafka)
+[![Build Status](https://travis-ci.org/rapideinternet/laravel-queue-kafka.svg?branch=master)](https://travis-ci.org/rapideinternet/laravel-queue-kafka)
 [![Total Downloads](https://poser.pugx.org/rapide/laravel-queue-kafka/downloads?format=flat-square)](https://packagist.org/packages/rapide/laravel-queue-kafka)
 [![StyleCI](https://styleci.io/repos/99249783/shield)](https://styleci.io/repos/99249783)
 [![License](https://poser.pugx.org/rapide/laravel-queue-kafka/license?format=flat-square)](https://packagist.org/packages/rapide/laravel-queue-kafka)
