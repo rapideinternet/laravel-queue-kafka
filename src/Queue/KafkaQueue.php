@@ -39,7 +39,6 @@ class KafkaQueue extends Queue implements QueueContract
      */
     public function __construct(\RdKafka\Producer $producer, \RdKafka\KafkaConsumer $consumer, $config)
     {
-
         $this->defaultQueue = $config['queue'];
         $this->sleepOnError = isset($config['sleep_on_error']) ? $config['sleep_on_error'] : 5;
 
@@ -134,7 +133,6 @@ class KafkaQueue extends Queue implements QueueContract
         switch ($message->err) {
             case RD_KAFKA_RESP_ERR_NO_ERROR:
                 return new KafkaJob($this, $message, $queue ?: $this->defaultQueue);
-
                 break;
             case RD_KAFKA_RESP_ERR__PARTITION_EOF:
             case RD_KAFKA_RESP_ERR__TIMED_OUT:
