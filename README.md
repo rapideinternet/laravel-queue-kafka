@@ -3,14 +3,14 @@ Kafka Queue driver for Laravel
 [![Latest Stable Version](https://poser.pugx.org/rapide/laravel-queue-kafka/v/stable?format=flat-square)](https://packagist.org/packages/rapide/laravel-queue-kafka)
 [![Build Status](https://img.shields.io/travis/rapide/laravel-queue-kafka.svg?style=flat-square)](https://travis-ci.org/rapide/laravel-queue-kafka)
 [![Total Downloads](https://poser.pugx.org/rapide/laravel-queue-kafka/downloads?format=flat-square)](https://packagist.org/packages/rapide/laravel-queue-kafka)
-[![StyleCI](https://styleci.io/repos/14976752/shield)](https://styleci.io/repos/14976752)
+[![StyleCI](https://styleci.io/repos/99249783/shield)](https://styleci.io/repos/99249783)
 [![License](https://poser.pugx.org/rapide/laravel-queue-kafka/license?format=flat-square)](https://packagist.org/packages/rapide/laravel-queue-kafka)
 
 #### Installation
 
 1. Install this package via composer using:
 
-	`composer require rapide/laravel-queue-kafka:5.4`
+	`composer require rapide/laravel-queue-kafka`
 
 2. Add LaravelQueueKafkaServiceProvider to `providers` array in `config/app.php`:
 
@@ -19,7 +19,6 @@ Kafka Queue driver for Laravel
 3. Add these properties to `.env` with proper values:
 
 		QUEUE_DRIVER=kafka
-
 
 You can also find full examples in src/examples folder.
 
@@ -35,10 +34,13 @@ Run the tests with:
 vendor/bin/phpunit
 ```
 
+#### Acknowledgement 
+
+This library is inspired by [laravel-queue-rabbitmq](https://github.com/vyuldashev/laravel-queue-rabbitmq) by vyuldashev.
 
 #### Contribution
 
-You can contribute to this package by discovering bugs and opening issues. Please, add to which version of package you create pull request or issue. (e.g. [5.2] Fatal error on delayed job)
+You can contribute to this package by discovering bugs and opening issues. Please, add to which version of package you create pull request or issue.
 
 #### Supported versions of Laravel (+Lumen)
 
