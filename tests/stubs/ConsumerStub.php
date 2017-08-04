@@ -1,5 +1,5 @@
 <?php
 
-class ConsumerStub extends \RdKafka\Consumer
+class ConsumerStub extends \RdKafka\KafkaConsumer
 {
 }

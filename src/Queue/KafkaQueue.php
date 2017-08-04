@@ -149,7 +149,7 @@ class KafkaQueue extends Queue implements QueueContract
      */
     private function getQueueName($queue)
     {
-        return $queue ?? $this->defaultQueue;
+        return $queue ?: $this->defaultQueue;
     }
 
     /**
