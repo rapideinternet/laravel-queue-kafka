@@ -37,6 +37,7 @@ vendor/bin/phpunit
 #### Acknowledgement 
 
 This library is inspired by [laravel-queue-rabbitmq](https://github.com/vyuldashev/laravel-queue-rabbitmq) by vyuldashev.
+And the Kafka implementation by [https://github.com/Superbalist/php-pubsub-kafka](Superbalist) 
 
 #### Contribution
 
@@ -44,6 +45,6 @@ You can contribute to this package by discovering bugs and opening issues. Pleas
 
 #### Supported versions of Laravel (+Lumen)
 
-5.4`
+5.4
 
 The version is being matched by the release tag of this library.
