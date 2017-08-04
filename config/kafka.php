@@ -7,7 +7,7 @@
  */
 return [
 
-    /**
+    /*
      * Driver name
      */
     'driver' => 'kafka',
@@ -17,12 +17,12 @@ return [
      */
     'queue' => env('KAFKA_QUEUE', 'default'),
 
-    /**
+    /*
      * The group of where the consumer in resides.
      */
     'consumer_group_id' => env('KAFKA_CONSUMER_GROUP_ID', 'laravel_queue'),
 
-    /**
+    /*
      * Address of the Kafka broker
      */
     'brokers' => env('KAFKA_BROKERS', 'localhost'),

@@ -14,7 +14,7 @@ class KafkaConnectorTest extends TestCase
             'queue' => 'queue_name',
             'consumer_group_id' => 'php-pubsub',
             'brokers' => 'localhost',
-            'sleep_on_error' => 5
+            'sleep_on_error' => 5,
         ];
 
         $container = Mockery::mock(\Illuminate\Container\Container::class);
@@ -47,7 +47,6 @@ class KafkaConnectorTest extends TestCase
             ->shouldReceive('makeWith')
             ->withArgs(['queue.kafka.conf', []])
             ->andReturn($conf);
-
 
         $connector = new KafkaConnector($container);
         $queue = $connector->connect($config);

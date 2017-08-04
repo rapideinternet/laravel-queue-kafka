@@ -28,15 +28,16 @@ class KafkaJob extends Job implements JobContract
 
     /**
      * KafkaJob constructor.
-     * @param KafkaQueue    $connection
-     * @param Message       $message
+     *
+     * @param KafkaQueue $connection
+     * @param Message $message
      * @param               $queue
      */
     public function __construct(
         KafkaQueue $connection,
         Message $message,
         $queue
-    ){
+    ) {
         $this->connection = $connection;
         $this->queue = $queue;
         $this->message = $message;
@@ -46,8 +47,6 @@ class KafkaJob extends Job implements JobContract
      * Fire the job.
      *
      * @throws Exception
-     *
-     * @return void
      */
     public function fire()
     {
@@ -93,8 +92,6 @@ class KafkaJob extends Job implements JobContract
 
     /**
      * Delete the job from the queue.
-     *
-     * @return void
      */
     public function delete()
     {
@@ -108,8 +105,6 @@ class KafkaJob extends Job implements JobContract
      * @param int $delay
      *
      * @throws Exception
-     *
-     * @return void
      */
     public function release($delay = 0)
     {
@@ -142,8 +137,6 @@ class KafkaJob extends Job implements JobContract
      * Sets the count of attempts at processing this job.
      *
      * @param int $count
-     *
-     * @return void
      */
     private function setAttempts($count)
     {
@@ -164,8 +157,6 @@ class KafkaJob extends Job implements JobContract
      * Sets the job identifier.
      *
      * @param string $id
-     *
-     * @return void
      */
     public function setJobId($id)
     {

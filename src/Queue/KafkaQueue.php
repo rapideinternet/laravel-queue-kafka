@@ -33,9 +33,9 @@ class KafkaQueue extends Queue implements QueueContract
     private $consumer;
 
     /**
-     * @param \RdKafka\Producer      $producer
+     * @param \RdKafka\Producer $producer
      * @param \RdKafka\KafkaConsumer $consumer
-     * @param array                  $config
+     * @param array $config
      */
     public function __construct(\RdKafka\Producer $producer, \RdKafka\KafkaConsumer $consumer, $config)
     {
@@ -64,7 +64,7 @@ class KafkaQueue extends Queue implements QueueContract
      * Push a new job onto the queue.
      *
      * @param string $job
-     * @param mixed  $data
+     * @param mixed $data
      * @param string $queue
      *
      * @return bool
@@ -79,7 +79,7 @@ class KafkaQueue extends Queue implements QueueContract
      *
      * @param string $payload
      * @param string $queue
-     * @param array  $options
+     * @param array $options
      *
      * @return mixed
      */
@@ -102,9 +102,9 @@ class KafkaQueue extends Queue implements QueueContract
      * Push a new job onto the queue after a delay.
      *
      * @param \DateTime|int $delay
-     * @param string        $job
-     * @param mixed         $data
-     * @param string        $queue
+     * @param string $job
+     * @param mixed $data
+     * @param string $queue
      *
      * @return mixed
      */
@@ -191,27 +191,29 @@ class KafkaQueue extends Queue implements QueueContract
     /**
      * Create a payload array from the given job and data.
      *
-     * @param  string  $job
-     * @param  mixed   $data
-     * @param  string  $queue
+     * @param  string $job
+     * @param  mixed $data
+     * @param  string $queue
+     *
      * @return array
      */
-    protected function createPayloadArray($job, $data = '', $queue = null){
-           return array_merge(parent::createPayloadArray($job, $data), [
+    protected function createPayloadArray($job, $data = '', $queue = null)
+    {
+        return array_merge(parent::createPayloadArray($job, $data), [
             'id' => $this->getCorrelationId(),
             'attempts' => 0,
         ]);
     }
 
     /**
-     * @param string    $action
+     * @param string $action
      * @param Exception $e
      *
      * @throws Exception
      */
     protected function reportConnectionError($action, Exception $e)
     {
-        Log::error('Kafka error while attempting '.$action.': '.$e->getMessage());
+        Log::error('Kafka error while attempting ' . $action . ': ' . $e->getMessage());
 
         // If it's set to false, throw an error rather than waiting
         if ($this->sleepOnError === false) {

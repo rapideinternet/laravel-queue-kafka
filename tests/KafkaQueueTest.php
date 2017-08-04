@@ -19,7 +19,6 @@ class KafkaQueueTest extends TestCase
         $this->producer = Mockery::mock(\RdKafka\Producer::class);
         $this->consumer = Mockery::mock(\RdKafka\KafkaConsumer::class);
 
-
         $this->config = [
             'queue' => str_random(),
             'sleep_error' => true,
@@ -55,7 +54,6 @@ class KafkaQueueTest extends TestCase
     {
         $delay = 5;
         $job = new TestJob();
-
 
         $this->expectException(\Exception::class);
 
