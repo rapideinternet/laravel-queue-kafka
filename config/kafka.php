@@ -6,7 +6,6 @@
  * You need to set proper values in `.env`.
  */
 return [
-
     /*
      * Driver name
      */

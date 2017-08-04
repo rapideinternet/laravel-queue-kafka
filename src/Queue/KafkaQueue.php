@@ -170,8 +170,6 @@ class KafkaQueue extends Queue implements QueueContract
      * Sets the correlation id for a message to be published.
      *
      * @param string $id
-     *
-     * @return void
      */
     public function setCorrelationId($id)
     {

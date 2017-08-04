@@ -3,7 +3,6 @@
 namespace Rapide\LaravelQueueKafka\Queue\Jobs;
 
 use Exception;
-use Illuminate\Container\Container;
 use Illuminate\Contracts\Queue\Job as JobContract;
 use Illuminate\Database\DetectsDeadlocks;
 use Illuminate\Queue\Jobs\Job;
@@ -16,13 +15,7 @@ class KafkaJob extends Job implements JobContract
 {
     use DetectsDeadlocks;
 
-    /**
-     * Same as RabbitMQQueue, used for attempt counts.
-     */
-    const ATTEMPT_COUNT_HEADERS_KEY = 'attempts_count';
-
     protected $connection;
-    protected $channel;
     protected $queue;
     protected $message;
 
@@ -37,7 +30,8 @@ class KafkaJob extends Job implements JobContract
         KafkaQueue $connection,
         Message $message,
         $queue
-    ) {
+    )
+    {
         $this->connection = $connection;
         $this->queue = $queue;
         $this->message = $message;
