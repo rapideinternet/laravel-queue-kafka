@@ -35,6 +35,10 @@ Kafka Queue driver for Laravel
 5. Add LaravelQueueKafkaServiceProvider to `providers` array in `config/app.php`:
 
 	`Rapide\LaravelQueueKafka\LaravelQueueKafkaServiceProvider::class,`
+	
+   If you are using Lumen, put this in `bootstrap/app.php`
+    
+    `$app->register(Rapide\LaravelQueueKafka\LumenQueueKafkaServiceProvider::class);`
 
 6. Add these properties to `.env` with proper values:
 
