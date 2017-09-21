@@ -6,9 +6,9 @@ use Illuminate\Container\Container;
 use Illuminate\Queue\Connectors\ConnectorInterface;
 use Rapide\LaravelQueueKafka\Queue\KafkaQueue;
 use RdKafka\Conf;
-use RdKafka\Consumer;
-use RdKafka\Producer;
 use RdKafka\TopicConf;
+use RdKafka\Producer;
+use RdKafka\KafkaConsumer;
 
 class KafkaConnector implements ConnectorInterface
 {
@@ -42,7 +42,7 @@ class KafkaConnector implements ConnectorInterface
 
         /** @var TopicConf $topicConf */
         $topicConf = $this->container->makeWith('queue.kafka.topic_conf', []);
-        $topicConf->set('auto.offset.reset', 'smallest');
+        $topicConf->set('auto.offset.reset', 'largest');
 
         /** @var Conf $conf */
         $conf = $this->container->makeWith('queue.kafka.conf', []);
@@ -52,7 +52,7 @@ class KafkaConnector implements ConnectorInterface
         $conf->set('offset.store.method', 'broker');
         $conf->setDefaultTopicConf($topicConf);
 
-        /** @var Consumer $consumer */
+        /** @var KafkaConsumer $consumer */
         $consumer = $this->container->makeWith('queue.kafka.consumer', ['conf' => $conf]);
 
         return new KafkaQueue(
