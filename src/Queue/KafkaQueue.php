@@ -31,6 +31,10 @@ class KafkaQueue extends Queue implements QueueContract
      * @var \RdKafka\KafkaConsumer
      */
     private $consumer;
+    /**
+     * @var array
+     */
+    private $subscribedQueueNames = [];
 
     /**
      * @param \RdKafka\Producer $producer
@@ -122,9 +126,13 @@ class KafkaQueue extends Queue implements QueueContract
      */
     public function pop($queue = null)
     {
-        $this->consumer->subscribe([$this->getQueueName($queue)]);
+        $queue = $this->getQueueName($queue);
+        if (!in_array($queue, $this->subscribedQueueNames)) {
+            $this->subscribedQueueNames[] = $queue;
+            $this->consumer->subscribe($this->subscribedQueueNames);
+        }
 
-        $message = $this->consumer->consume(30 * 1000);
+        $message = $this->consumer->consume(1000);
 
         if ($message === null) {
             return;
@@ -132,7 +140,10 @@ class KafkaQueue extends Queue implements QueueContract
 
         switch ($message->err) {
             case RD_KAFKA_RESP_ERR_NO_ERROR:
-                return new KafkaJob($this, $message, $queue ?: $this->defaultQueue);
+                return new KafkaJob(
+                    $this->container, $this, $message,
+                    $this->connectionName, $queue ?: $this->defaultQueue
+                );
                 break;
             case RD_KAFKA_RESP_ERR__PARTITION_EOF:
             case RD_KAFKA_RESP_ERR__TIMED_OUT:
