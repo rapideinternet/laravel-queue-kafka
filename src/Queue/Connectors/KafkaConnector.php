@@ -6,9 +6,9 @@ use Illuminate\Container\Container;
 use Illuminate\Queue\Connectors\ConnectorInterface;
 use Rapide\LaravelQueueKafka\Queue\KafkaQueue;
 use RdKafka\Conf;
-use RdKafka\TopicConf;
-use RdKafka\Producer;
 use RdKafka\KafkaConsumer;
+use RdKafka\Producer;
+use RdKafka\TopicConf;
 
 class KafkaConnector implements ConnectorInterface
 {
