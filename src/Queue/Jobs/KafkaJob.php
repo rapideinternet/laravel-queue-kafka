@@ -3,12 +3,12 @@
 namespace Rapide\LaravelQueueKafka\Queue\Jobs;
 
 use Exception;
+use Illuminate\Container\Container;
 use Illuminate\Contracts\Queue\Job as JobContract;
 use Illuminate\Database\DetectsDeadlocks;
 use Illuminate\Queue\Jobs\Job;
 use Illuminate\Queue\Jobs\JobName;
 use Illuminate\Support\Str;
-use Illuminate\Container\Container;
 use Rapide\LaravelQueueKafka\Queue\KafkaQueue;
 use RdKafka\Message;
 
@@ -72,7 +72,7 @@ class KafkaJob extends Job implements JobContract
      */
     public function attempts()
     {
-        return (int)($this->payload()['attempts']) + 1;
+        return (int) ($this->payload()['attempts']) + 1;
     }
 
     /**
