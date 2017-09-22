@@ -7,6 +7,7 @@ use Rapide\LaravelQueueKafka\Queue\KafkaQueue;
 /**
  * @property \Mockery\MockInterface producer
  * @property \Mockery\MockInterface consumer
+ * @property \Mockery\MockInterface $container
  * @property array config
  * @property KafkaQueue queue
  */
@@ -18,6 +19,7 @@ class KafkaQueueTest extends TestCase
 
         $this->producer = Mockery::mock(\RdKafka\Producer::class);
         $this->consumer = Mockery::mock(\RdKafka\KafkaConsumer::class);
+        $this->container = Mockery::mock(\Illuminate\Container\Container::class);
 
         $this->config = [
             'queue' => str_random(),
@@ -25,6 +27,7 @@ class KafkaQueueTest extends TestCase
         ];
 
         $this->queue = new KafkaQueue($this->producer, $this->consumer, $this->config);
+        $this->queue->setContainer($this->container);
     }
 
     public function test_size()
