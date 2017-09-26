@@ -12,4 +12,4 @@ cd /tmp \
 
 pecl install rdkafka
 
-echo "extension = rdkafka.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+echo "extension=rdkafka.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini

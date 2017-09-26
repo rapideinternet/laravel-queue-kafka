@@ -3,6 +3,7 @@
 namespace Rapide\LaravelQueueKafka\Queue\Jobs;
 
 use Exception;
+use Illuminate\Container\Container;
 use Illuminate\Contracts\Queue\Job as JobContract;
 use Illuminate\Database\DetectsDeadlocks;
 use Illuminate\Queue\Jobs\Job;
@@ -22,15 +23,19 @@ class KafkaJob extends Job implements JobContract
     /**
      * KafkaJob constructor.
      *
+     * @param Container $container
      * @param KafkaQueue $connection
      * @param Message $message
-     * @param               $queue
+     * @param $connectionName
+     * @param $queue
      */
-    public function __construct(KafkaQueue $connection, Message $message, $queue)
+    public function __construct(Container $container, KafkaQueue $connection, Message $message, $connectionName, $queue)
     {
+        $this->container = $container;
         $this->connection = $connection;
-        $this->queue = $queue;
         $this->message = $message;
+        $this->connectionName = $connectionName;
+        $this->queue = $queue;
     }
 
     /**
@@ -67,7 +72,7 @@ class KafkaJob extends Job implements JobContract
      */
     public function attempts()
     {
-        return 1;
+        return (int) ($this->payload()['attempts']) + 1;
     }
 
     /**
@@ -101,7 +106,6 @@ class KafkaJob extends Job implements JobContract
         parent::release($delay);
 
         $this->delete();
-        $this->setAttempts($this->attempts() + 1);
 
         $body = $this->payload();
 
@@ -121,16 +125,6 @@ class KafkaJob extends Job implements JobContract
         } else {
             $this->connection->push($job, $data, $this->getQueue());
         }
-    }
-
-    /**
-     * Sets the count of attempts at processing this job.
-     *
-     * @param int $count
-     */
-    private function setAttempts($count)
-    {
-        $this->connection->setAttempts($count);
     }
 
     /**
