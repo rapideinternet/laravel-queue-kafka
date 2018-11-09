@@ -67,4 +67,4 @@ You can contribute to this package by discovering bugs and opening issues. Pleas
 
 #### Supported versions of Laravel 
 
-Tested on: [5.4]
+Tested on: [5.4, 5.5, 5.6, 5.7]

@@ -6,7 +6,8 @@ php:
   - 5.6
   - 7.0
   - 7.1
-  - hhvm
+  - 7.2
+  - 7.3
   - nightly
 
 install:
@@ -14,10 +15,9 @@ install:
   - travis_retry composer install --no-interaction
 
 matrix:
-    fast_finish: true
-    allow_failures:
-        - php: hhvm
-        - php: nightly
+  fast_finish: true
+  allow_failures:
+    - php: nightly
 
 script:
   - phpunit --no-coverage

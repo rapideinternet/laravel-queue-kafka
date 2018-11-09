@@ -16,8 +16,17 @@ class KafkaJob extends Job implements JobContract
 {
     use DetectsDeadlocks;
 
+    /**
+     * @var KafkaQueue
+     */
     protected $connection;
+    /**
+     * @var KafkaQueue
+     */
     protected $queue;
+    /**
+     * @var Message
+     */
     protected $message;
 
     /**
@@ -72,7 +81,7 @@ class KafkaJob extends Job implements JobContract
      */
     public function attempts()
     {
-        return (int) ($this->payload()['attempts']) + 1;
+        return (int)($this->payload()['attempts']) + 1;
     }
 
     /**
@@ -134,7 +143,7 @@ class KafkaJob extends Job implements JobContract
      */
     public function getJobId()
     {
-        return $this->message->get('correlation_id');
+        return $this->message->key;
     }
 
     /**
