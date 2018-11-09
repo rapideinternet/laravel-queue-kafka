@@ -81,7 +81,7 @@ class KafkaJob extends Job implements JobContract
      */
     public function attempts()
     {
-        return (int)($this->payload()['attempts']) + 1;
+        return (int) ($this->payload()['attempts']) + 1;
     }
 
     /**
