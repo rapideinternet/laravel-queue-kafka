@@ -62,7 +62,6 @@ enabled:
   - print_to_echo
   - self_accessor
   - short_array_syntax
-  - short_scalar_cast
   - single_blank_line_before_namespace
   - single_quote
   - space_after_semicolon

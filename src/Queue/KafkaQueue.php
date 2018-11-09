@@ -20,6 +20,10 @@ class KafkaQueue extends Queue implements QueueContract
      */
     protected $sleepOnError;
     /**
+     * @var array
+     */
+    protected $config;
+    /**
      * @var string
      */
     private $correlationId;
@@ -48,6 +52,7 @@ class KafkaQueue extends Queue implements QueueContract
 
         $this->producer = $producer;
         $this->consumer = $consumer;
+        $this->config = $config;
     }
 
     /**
@@ -193,6 +198,14 @@ class KafkaQueue extends Queue implements QueueContract
     public function getCorrelationId()
     {
         return $this->correlationId ?: uniqid('', true);
+    }
+
+    /**
+     * @return array
+     */
+    public function getConfig()
+    {
+        return $this->config;
     }
 
     /**

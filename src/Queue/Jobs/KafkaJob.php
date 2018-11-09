@@ -64,7 +64,7 @@ class KafkaJob extends Job implements JobContract
                 $this->causedByDeadlock($exception) ||
                 Str::contains($exception->getMessage(), ['detected deadlock'])
             ) {
-                sleep(2);
+                sleep($this->connection->getConfig()['sleep_on_deadlock']);
                 $this->fire();
 
                 return;
@@ -81,7 +81,7 @@ class KafkaJob extends Job implements JobContract
      */
     public function attempts()
     {
-        return (int) ($this->payload()['attempts']) + 1;
+        return (int)($this->payload()['attempts']) + 1;
     }
 
     /**
@@ -174,7 +174,7 @@ class KafkaJob extends Job implements JobContract
                 $this->causedByDeadlock($exception) ||
                 Str::contains($exception->getMessage(), ['detected deadlock'])
             ) {
-                sleep(2);
+                sleep($this->connection->getConfig()['sleep_on_deadlock']);
 
                 return $this->unserialize($body);
             }
