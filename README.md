@@ -44,6 +44,13 @@ Kafka Queue driver for Laravel
 
 		QUEUE_DRIVER=kafka
 
+7. If you want to run a worker for a specific consumer group
+
+        export KAFKA_CONSUMER_GROUP_ID="group2" && php artisan queue:work --sleep=3 --tries=3
+    
+    Explaination of consumergroups can be found in this article 
+    http://blog.cloudera.com/blog/2018/05/scalability-of-kafka-messaging-using-consumer-groups/
+
 #### Usage
 
 Once you completed the configuration you can use Laravel Queue API. If you used other queue drivers you do not need to change anything else. If you do not know how to use Queue API, please refer to the official Laravel documentation: http://laravel.com/docs/queues
