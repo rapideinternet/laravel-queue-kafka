@@ -32,7 +32,7 @@ return [
      */
     'sleep_on_error' => env('KAFKA_ERROR_SLEEP', 5),
 
-    /**
+    /*
      * Sleep when a deadlock is detected
      */
     'sleep_on_deadlock' => env('KAFKA_DEADLOCK_SLEEP', 2),

@@ -9,6 +9,7 @@ use Illuminate\Database\DetectsDeadlocks;
 use Illuminate\Queue\Jobs\Job;
 use Illuminate\Queue\Jobs\JobName;
 use Illuminate\Support\Str;
+use Rapide\LaravelQueueKafka\Exceptions\QueueKafkaException;
 use Rapide\LaravelQueueKafka\Queue\KafkaQueue;
 use RdKafka\Message;
 
@@ -81,7 +82,7 @@ class KafkaJob extends Job implements JobContract
      */
     public function attempts()
     {
-        return (int)($this->payload()['attempts']) + 1;
+        return (int) ($this->payload()['attempts']) + 1;
     }
 
     /**
@@ -99,8 +100,12 @@ class KafkaJob extends Job implements JobContract
      */
     public function delete()
     {
-        parent::delete();
-        $this->connection->getConsumer()->commitAsync($this->message);
+        try {
+            parent::delete();
+            $this->connection->getConsumer()->commitAsync($this->message);
+        } catch (\RdKafka\Exception $exception) {
+            throw new QueueKafkaException('Could not delete job from the queue', 0, $exception);
+        }
     }
 
     /**
@@ -171,8 +176,8 @@ class KafkaJob extends Job implements JobContract
             return unserialize($body['data']['command']);
         } catch (Exception $exception) {
             if (
-                $this->causedByDeadlock($exception) ||
-                Str::contains($exception->getMessage(), ['detected deadlock'])
+                $this->causedByDeadlock($exception)
+                || Str::contains($exception->getMessage(), ['detected deadlock'])
             ) {
                 sleep($this->connection->getConfig()['sleep_on_deadlock']);
 

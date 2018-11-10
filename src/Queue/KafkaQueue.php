@@ -7,6 +7,7 @@ use Exception;
 use Illuminate\Contracts\Queue\Queue as QueueContract;
 use Illuminate\Queue\Queue;
 use Log;
+use Rapide\LaravelQueueKafka\Exceptions\QueueKafkaException;
 use Rapide\LaravelQueueKafka\Queue\Jobs\KafkaJob;
 
 class KafkaQueue extends Queue implements QueueContract
@@ -90,17 +91,18 @@ class KafkaQueue extends Queue implements QueueContract
      * @param array $options
      *
      * @return mixed
+     * @throws QueueKafkaException
      */
     public function pushRaw($payload, $queue = null, array $options = [])
     {
         try {
             $topic = $this->getTopic($queue);
 
-            $correlationId = $this->getCorrelationId();
+            $pushRawCorrelationId = $this->getCorrelationId();
 
-            $topic->produce(RD_KAFKA_PARTITION_UA, 0, $payload, $correlationId);
+            $topic->produce(RD_KAFKA_PARTITION_UA, 0, $payload, $pushRawCorrelationId);
 
-            return $correlationId;
+            return $pushRawCorrelationId;
         } catch (ErrorException $exception) {
             $this->reportConnectionError('pushRaw', $exception);
         }
@@ -119,7 +121,7 @@ class KafkaQueue extends Queue implements QueueContract
     public function later($delay, $job, $data = '', $queue = null)
     {
         //Later is not sup
-        throw new Exception('Later not yet implemented');
+        throw new QueueKafkaException('Later not yet implemented');
     }
 
     /**
@@ -128,33 +130,37 @@ class KafkaQueue extends Queue implements QueueContract
      * @param string|null $queue
      *
      * @return \Illuminate\Queue\Jobs\Job|null
+     * @throws QueueKafkaException
      */
     public function pop($queue = null)
     {
-        $queue = $this->getQueueName($queue);
-        if (!in_array($queue, $this->subscribedQueueNames)) {
-            $this->subscribedQueueNames[] = $queue;
-            $this->consumer->subscribe($this->subscribedQueueNames);
-        }
+        try {
+            $queue = $this->getQueueName($queue);
+            if (!in_array($queue, $this->subscribedQueueNames)) {
+                $this->subscribedQueueNames[] = $queue;
+                $this->consumer->subscribe($this->subscribedQueueNames);
+            }
 
-        $message = $this->consumer->consume(1000);
+            $message = $this->consumer->consume(1000);
 
-        if ($message === null) {
-            return;
-        }
+            if ($message === null) {
+                return null;
+            }
 
-        switch ($message->err) {
-            case RD_KAFKA_RESP_ERR_NO_ERROR:
-                return new KafkaJob(
-                    $this->container, $this, $message,
-                    $this->connectionName, $queue ?: $this->defaultQueue
-                );
-                break;
-            case RD_KAFKA_RESP_ERR__PARTITION_EOF:
-            case RD_KAFKA_RESP_ERR__TIMED_OUT:
-                break;
-            default:
-                throw new \Exception($message->errstr(), $message->err);
+            switch ($message->err) {
+                case RD_KAFKA_RESP_ERR_NO_ERROR:
+                    return new KafkaJob(
+                        $this->container, $this, $message,
+                        $this->connectionName, $queue ?: $this->defaultQueue
+                    );
+                case RD_KAFKA_RESP_ERR__PARTITION_EOF:
+                case RD_KAFKA_RESP_ERR__TIMED_OUT:
+                    break;
+                default:
+                    throw new QueueKafkaException($message->errstr(), $message->err);
+            }
+        } catch (\RdKafka\Exception $exception) {
+            throw new QueueKafkaException('Could not pop from the queue', 0, $exception);
         }
     }
 
@@ -229,7 +235,7 @@ class KafkaQueue extends Queue implements QueueContract
      * @param string $action
      * @param Exception $e
      *
-     * @throws Exception
+     * @throws QueueKafkaException
      */
     protected function reportConnectionError($action, Exception $e)
     {
@@ -237,7 +243,7 @@ class KafkaQueue extends Queue implements QueueContract
 
         // If it's set to false, throw an error rather than waiting
         if ($this->sleepOnError === false) {
-            throw new \RuntimeException('Error writing data to the connection with Kafka');
+            throw new QueueKafkaException('Error writing data to the connection with Kafka');
         }
 
         // Sleep so that we don't flood the log file
