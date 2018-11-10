@@ -9,6 +9,7 @@ use Illuminate\Database\DetectsDeadlocks;
 use Illuminate\Queue\Jobs\Job;
 use Illuminate\Queue\Jobs\JobName;
 use Illuminate\Support\Str;
+use Rapide\LaravelQueueKafka\Exceptions\QueueKafkaException;
 use Rapide\LaravelQueueKafka\Queue\KafkaQueue;
 use RdKafka\Message;
 
@@ -16,8 +17,17 @@ class KafkaJob extends Job implements JobContract
 {
     use DetectsDeadlocks;
 
+    /**
+     * @var KafkaQueue
+     */
     protected $connection;
+    /**
+     * @var KafkaQueue
+     */
     protected $queue;
+    /**
+     * @var Message
+     */
     protected $message;
 
     /**
@@ -55,7 +65,7 @@ class KafkaJob extends Job implements JobContract
                 $this->causedByDeadlock($exception) ||
                 Str::contains($exception->getMessage(), ['detected deadlock'])
             ) {
-                sleep(2);
+                sleep($this->connection->getConfig()['sleep_on_deadlock']);
                 $this->fire();
 
                 return;
@@ -90,8 +100,12 @@ class KafkaJob extends Job implements JobContract
      */
     public function delete()
     {
-        parent::delete();
-        $this->connection->getConsumer()->commitAsync($this->message);
+        try {
+            parent::delete();
+            $this->connection->getConsumer()->commitAsync($this->message);
+        } catch (\RdKafka\Exception $exception) {
+            throw new QueueKafkaException('Could not delete job from the queue', 0, $exception);
+        }
     }
 
     /**
@@ -134,7 +148,7 @@ class KafkaJob extends Job implements JobContract
      */
     public function getJobId()
     {
-        return $this->message->get('correlation_id');
+        return $this->message->key;
     }
 
     /**
@@ -162,10 +176,10 @@ class KafkaJob extends Job implements JobContract
             return unserialize($body['data']['command']);
         } catch (Exception $exception) {
             if (
-                $this->causedByDeadlock($exception) ||
-                Str::contains($exception->getMessage(), ['detected deadlock'])
+                $this->causedByDeadlock($exception)
+                || Str::contains($exception->getMessage(), ['detected deadlock'])
             ) {
-                sleep(2);
+                sleep($this->connection->getConfig()['sleep_on_deadlock']);
 
                 return $this->unserialize($body);
             }
