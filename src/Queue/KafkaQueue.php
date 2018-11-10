@@ -90,8 +90,9 @@ class KafkaQueue extends Queue implements QueueContract
      * @param string $queue
      * @param array $options
      *
-     * @return mixed
      * @throws QueueKafkaException
+     *
+     * @return mixed
      */
     public function pushRaw($payload, $queue = null, array $options = [])
     {
@@ -116,6 +117,8 @@ class KafkaQueue extends Queue implements QueueContract
      * @param mixed $data
      * @param string $queue
      *
+     * @throws QueueKafkaException
+     *
      * @return mixed
      */
     public function later($delay, $job, $data = '', $queue = null)
@@ -129,8 +132,9 @@ class KafkaQueue extends Queue implements QueueContract
      *
      * @param string|null $queue
      *
-     * @return \Illuminate\Queue\Jobs\Job|null
      * @throws QueueKafkaException
+     *
+     * @return \Illuminate\Queue\Jobs\Job|null
      */
     public function pop($queue = null)
     {
