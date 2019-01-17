@@ -98,7 +98,6 @@ class KafkaQueue extends Queue implements QueueContract
     {
         try {
             $topic = $this->getTopic($queue);
-            \Illuminate\Support\Facades\Log::debug('queue: ' . $queue);
 
             $pushRawCorrelationId = $this->getCorrelationId();
 
