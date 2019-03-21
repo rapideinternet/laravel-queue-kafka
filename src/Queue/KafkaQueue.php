@@ -80,7 +80,7 @@ class KafkaQueue extends Queue implements QueueContract
      */
     public function push($job, $data = '', $queue = null)
     {
-        return $this->pushRaw($this->createPayload($job, $data), $queue, []);
+        return $this->pushRaw($this->createPayload($job, $queue, $data), $queue, []);
     }
 
     /**
@@ -222,14 +222,14 @@ class KafkaQueue extends Queue implements QueueContract
      * Create a payload array from the given job and data.
      *
      * @param  string $job
-     * @param  mixed $data
      * @param  string $queue
+     * @param  mixed $data
      *
      * @return array
      */
-    protected function createPayloadArray($job, $data = '', $queue = null)
+    protected function createPayloadArray($job, $queue = null, $data = '')
     {
-        return array_merge(parent::createPayloadArray($job, $data), [
+        return array_merge(parent::createPayloadArray($job, $queue, $data), [
             'id' => $this->getCorrelationId(),
             'attempts' => 0,
         ]);
