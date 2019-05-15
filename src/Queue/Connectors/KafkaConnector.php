@@ -46,6 +46,12 @@ class KafkaConnector implements ConnectorInterface
 
         /** @var Conf $conf */
         $conf = $this->container->makeWith('queue.kafka.conf', []);
+        if (true === $config['sasl_enable']) {
+            $conf->set('sasl.mechanisms', 'PLAIN');
+            $conf->set('sasl.username', $config['sasl_plain_username']);
+            $conf->set('sasl.password', $config['sasl_plain_password']);
+            $conf->set('ssl.ca.location', $config['ssl_ca_location']);
+        }
         $conf->set('group.id', array_get($config, 'consumer_group_id', 'php-pubsub'));
         $conf->set('metadata.broker.list', $config['brokers']);
         $conf->set('enable.auto.commit', 'false');
