@@ -11,6 +11,7 @@ use Illuminate\Queue\Jobs\JobName;
 use Illuminate\Support\Str;
 use Rapide\LaravelQueueKafka\Exceptions\QueueKafkaException;
 use Rapide\LaravelQueueKafka\Queue\KafkaQueue;
+use RdKafka\ConsumerTopic;
 use RdKafka\Message;
 
 class KafkaJob extends Job implements JobContract
@@ -31,21 +32,28 @@ class KafkaJob extends Job implements JobContract
     protected $message;
 
     /**
+     * @var ConsumerTopic
+     */
+    protected $topic;
+
+    /**
      * KafkaJob constructor.
      *
      * @param Container $container
      * @param KafkaQueue $connection
      * @param Message $message
-     * @param $connectionName
-     * @param $queue
+     * @param string $connectionName
+     * @param string $queue
+     * @param ConsumerTopic $topic
      */
-    public function __construct(Container $container, KafkaQueue $connection, Message $message, $connectionName, $queue)
+    public function __construct(Container $container, KafkaQueue $connection, Message $message, $connectionName, $queue, ConsumerTopic $topic)
     {
         $this->container = $container;
         $this->connection = $connection;
         $this->message = $message;
         $this->connectionName = $connectionName;
         $this->queue = $queue;
+        $this->topic = $topic;
     }
 
     /**
@@ -102,7 +110,7 @@ class KafkaJob extends Job implements JobContract
     {
         try {
             parent::delete();
-            $this->connection->getConsumer()->commitAsync($this->message);
+            $this->topic->offsetStore($this->message->partition, $this->message->offset);
         } catch (\RdKafka\Exception $exception) {
             throw new QueueKafkaException('Could not delete job from the queue', 0, $exception);
         }

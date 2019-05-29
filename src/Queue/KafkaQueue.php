@@ -33,20 +33,24 @@ class KafkaQueue extends Queue implements QueueContract
      */
     private $producer;
     /**
-     * @var \RdKafka\KafkaConsumer
+     * @var \RdKafka\Consumer
      */
     private $consumer;
     /**
      * @var array
      */
-    private $subscribedQueueNames = [];
+    private $topics = [];
+    /**
+     * @var array
+     */
+    private $queues = [];
 
     /**
      * @param \RdKafka\Producer $producer
      * @param \RdKafka\KafkaConsumer $consumer
      * @param array $config
      */
-    public function __construct(\RdKafka\Producer $producer, \RdKafka\KafkaConsumer $consumer, $config)
+    public function __construct(\RdKafka\Producer $producer, \RdKafka\Consumer $consumer, $config)
     {
         $this->defaultQueue = $config['queue'];
         $this->sleepOnError = isset($config['sleep_on_error']) ? $config['sleep_on_error'] : 5;
@@ -140,12 +144,16 @@ class KafkaQueue extends Queue implements QueueContract
     {
         try {
             $queue = $this->getQueueName($queue);
-            if (!in_array($queue, $this->subscribedQueueNames)) {
-                $this->subscribedQueueNames[] = $queue;
-                $this->consumer->subscribe($this->subscribedQueueNames);
+            if (!array_key_exists($queue, $this->queues)) {
+                $this->queues[$queue] = $this->consumer->newQueue();
+                $topicConf = new \RdKafka\TopicConf();
+                $topicConf->set('auto.offset.reset', 'largest');
+
+                $this->topics[$queue] = $this->consumer->newTopic($queue, $topicConf);
+                $this->topics[$queue]->consumeQueueStart(0, RD_KAFKA_OFFSET_BEGINNING, $this->queues[$queue]);
             }
 
-            $message = $this->consumer->consume(1000);
+            $message = $this->queues[$queue]->consume(1000);
 
             if ($message === null) {
                 return null;
@@ -155,7 +163,7 @@ class KafkaQueue extends Queue implements QueueContract
                 case RD_KAFKA_RESP_ERR_NO_ERROR:
                     return new KafkaJob(
                         $this->container, $this, $message,
-                        $this->connectionName, $queue ?: $this->defaultQueue
+                        $this->connectionName, $queue ?: $this->defaultQueue, $this->topics[$queue]
                     );
                 case RD_KAFKA_RESP_ERR__PARTITION_EOF:
                 case RD_KAFKA_RESP_ERR__TIMED_OUT:
@@ -255,7 +263,7 @@ class KafkaQueue extends Queue implements QueueContract
     }
 
     /**
-     * @return \RdKafka\KafkaConsumer
+     * @return \RdKafka\Consumer
      */
     public function getConsumer()
     {
