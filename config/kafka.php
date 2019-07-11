@@ -36,4 +36,24 @@ return [
      * Sleep when a deadlock is detected
      */
     'sleep_on_deadlock' => env('KAFKA_DEADLOCK_SLEEP', 2),
+
+    /*
+     * sasl authorization
+     */
+    'sasl_enable' => false,
+
+    /*
+     * File or directory path to CA certificate(s) for verifying the broker's key. example: storage_path('kafka.client.truststore.jks')
+     */
+    'ssl_ca_location' => '',
+
+    /*
+     * SASL username for use with the PLAIN and SASL-SCRAM-.. mechanisms 
+     */
+    'sasl_plain_username' => env('KAFKA_SASL_PLAIN_USERNAME'),
+
+    /*
+     * SASL password for use with the PLAIN and SASL-SCRAM-.. mechanism 
+     */
+    'sasl_plain_password' => env('KAFKA_SASL_PLAIN_PASSWORD'),
 ];
