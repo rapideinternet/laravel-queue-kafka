@@ -284,7 +284,7 @@ class KafkaQueue extends Queue implements QueueContract
      * @param  mixed $data
      * @param  string $queue
      * @param  int $attempts
-     * 
+     *
      * @return mixed
      */
     public function releaseBack($delay, $job, $data, $queue, $attempts = 0)
