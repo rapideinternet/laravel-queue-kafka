@@ -48,12 +48,12 @@ return [
     'ssl_ca_location' => '',
 
     /*
-     * SASL username for use with the PLAIN and SASL-SCRAM-.. mechanisms 
+     * SASL username for use with the PLAIN and SASL-SCRAM-.. mechanisms
      */
     'sasl_plain_username' => env('KAFKA_SASL_PLAIN_USERNAME'),
 
     /*
-     * SASL password for use with the PLAIN and SASL-SCRAM-.. mechanism 
+     * SASL password for use with the PLAIN and SASL-SCRAM-.. mechanism
      */
     'sasl_plain_password' => env('KAFKA_SASL_PLAIN_PASSWORD'),
 ];

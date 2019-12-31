@@ -9,6 +9,7 @@ use RdKafka\Conf;
 use RdKafka\KafkaConsumer;
 use RdKafka\Producer;
 use RdKafka\TopicConf;
+use Illuminate\Support\Arr;
 
 class KafkaConnector implements ConnectorInterface
 {
@@ -52,11 +53,10 @@ class KafkaConnector implements ConnectorInterface
             $conf->set('sasl.password', $config['sasl_plain_password']);
             $conf->set('ssl.ca.location', $config['ssl_ca_location']);
         }
-        $conf->set('group.id', array_get($config, 'consumer_group_id', 'php-pubsub'));
+        $conf->set('group.id', Arr::get($config, 'consumer_group_id', 'php-pubsub'));
         $conf->set('metadata.broker.list', $config['brokers']);
         $conf->set('enable.auto.commit', 'false');
         $conf->set('offset.store.method', 'broker');
-        $conf->setDefaultTopicConf($topicConf);
 
         /** @var KafkaConsumer $consumer */
         $consumer = $this->container->makeWith('queue.kafka.consumer', ['conf' => $conf]);

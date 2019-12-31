@@ -5,7 +5,6 @@ namespace Rapide\LaravelQueueKafka\Queue\Jobs;
 use Exception;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Queue\Job as JobContract;
-use Illuminate\Database\DetectsDeadlocks;
 use Illuminate\Queue\Jobs\Job;
 use Illuminate\Queue\Jobs\JobName;
 use Illuminate\Support\Str;
@@ -16,8 +15,6 @@ use RdKafka\Message;
 
 class KafkaJob extends Job implements JobContract
 {
-    use DetectsDeadlocks;
-
     /**
      * @var KafkaQueue
      */
