@@ -10,11 +10,14 @@ use Illuminate\Queue\Jobs\JobName;
 use Illuminate\Support\Str;
 use Rapide\LaravelQueueKafka\Exceptions\QueueKafkaException;
 use Rapide\LaravelQueueKafka\Queue\KafkaQueue;
+use Rapide\LaravelQueueKafka\Traits\DetectsDeadlocks;
 use RdKafka\ConsumerTopic;
 use RdKafka\Message;
 
 class KafkaJob extends Job implements JobContract
 {
+    use DetectsDeadlocks;
+
     /**
      * @var KafkaQueue
      */
