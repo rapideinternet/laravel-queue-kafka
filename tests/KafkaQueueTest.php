@@ -22,7 +22,7 @@ class KafkaQueueTest extends TestCase
         $this->container = Mockery::mock(\Illuminate\Container\Container::class);
 
         $this->config = [
-            'queue' => str_random(),
+            'queue' => function_exists('str_random') ? str_random() : \Illuminate\Support\Str::random(),
             'sleep_error' => true,
         ];
 
@@ -122,7 +122,7 @@ class KafkaQueueTest extends TestCase
 
     public function test_setCorrelationId()
     {
-        $id = str_random();
+        $id = function_exists('str_random') ? str_random() : \Illuminate\Support\Str::random();
 
         $this->queue->setCorrelationId($id);
 
