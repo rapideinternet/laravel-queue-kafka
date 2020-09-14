@@ -94,9 +94,9 @@ class KafkaQueue extends Queue implements QueueContract
      * @param string $queue
      * @param array $options
      *
+     * @return mixed
      * @throws QueueKafkaException
      *
-     * @return mixed
      */
     public function pushRaw($payload, $queue = null, array $options = [])
     {
@@ -121,9 +121,9 @@ class KafkaQueue extends Queue implements QueueContract
      * @param mixed $data
      * @param string $queue
      *
+     * @return mixed
      * @throws QueueKafkaException
      *
-     * @return mixed
      */
     public function later($delay, $job, $data = '', $queue = null)
     {
@@ -136,9 +136,9 @@ class KafkaQueue extends Queue implements QueueContract
      *
      * @param string|null $queue
      *
+     * @return \Illuminate\Queue\Jobs\Job|null
      * @throws QueueKafkaException
      *
-     * @return \Illuminate\Queue\Jobs\Job|null
      */
     public function pop($queue = null)
     {
@@ -153,7 +153,8 @@ class KafkaQueue extends Queue implements QueueContract
                 $this->topics[$queue]->consumeQueueStart(0, RD_KAFKA_OFFSET_STORED, $this->queues[$queue]);
             }
 
-            $message = $this->queues[$queue]->consume(1000);
+
+            $message = $this->queues[$queue]->consume(0, 1000);
 
             if ($message === null) {
                 return null;
@@ -229,9 +230,9 @@ class KafkaQueue extends Queue implements QueueContract
     /**
      * Create a payload array from the given job and data.
      *
-     * @param  string $job
-     * @param  string $queue
-     * @param  mixed $data
+     * @param string $job
+     * @param string $queue
+     * @param mixed $data
      *
      * @return array
      */

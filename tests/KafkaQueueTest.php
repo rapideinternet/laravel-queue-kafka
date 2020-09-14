@@ -1,28 +1,34 @@
 <?php
 
+use Illuminate\Support\Str;
 use PHPUnit\Framework\TestCase;
 use Rapide\LaravelQueueKafka\Queue\Jobs\KafkaJob;
 use Rapide\LaravelQueueKafka\Queue\KafkaQueue;
 
 /**
- * @property \Mockery\MockInterface producer
- * @property \Mockery\MockInterface consumer
- * @property \Mockery\MockInterface $container
  * @property array config
- * @property KafkaQueue queue
  */
 class KafkaQueueTest extends TestCase
 {
-    public function setUp()
+    protected $producer;
+    protected $consumer;
+    protected $contianer;
+    protected $topic;
+    protected $queue;
+    protected $config;
+
+    public function setUp(): void
     {
         parent::setUp();
 
         $this->producer = Mockery::mock(\RdKafka\Producer::class);
-        $this->consumer = Mockery::mock(\RdKafka\KafkaConsumer::class);
+        $this->consumer = Mockery::mock(\RdKafka\Consumer::class);
         $this->container = Mockery::mock(\Illuminate\Container\Container::class);
+        $this->topic = Mockery::mock(\RdKafka\Topic::class);
+        $this->kafkaQueue = Mockery::mock(\RdKafka\Queue::class);
 
         $this->config = [
-            'queue' => function_exists('str_random') ? str_random() : \Illuminate\Support\Str::random(),
+            'queue' => Str::random(),
             'sleep_error' => true,
         ];
 
@@ -43,10 +49,9 @@ class KafkaQueueTest extends TestCase
         $job = new TestJob();
         $data = [];
 
-        $topic = Mockery::mock(\RdKafka\Topic::class);
-        $topic->shouldReceive('produce');
+        $this->topic->shouldReceive('produce');
 
-        $this->producer->shouldReceive('newTopic')->andReturn($topic);
+        $this->producer->shouldReceive('newTopic')->andReturn($this->topic);
 
         $correlationId = $this->queue->push($job, $data);
 
@@ -69,8 +74,15 @@ class KafkaQueueTest extends TestCase
         $message = Mockery::mock(\RdKafka\Message::class);
         $message->err = RD_KAFKA_RESP_ERR_NO_ERROR;
 
+        $this->producer->shouldReceive('newTopic')->andReturn($this->topic);
+
         $this->consumer->shouldReceive('subscribe')->with([$queue]);
         $this->consumer->shouldReceive('consume')->andReturn($message);
+        $this->consumer->shouldReceive('newQueue')->andReturn($this->kafkaQueue);
+        $this->consumer->shouldReceive('newTopic')->andReturn($this->topic);
+
+        $this->topic->shouldReceive('consumeQueueStart');
+        $this->kafkaQueue->shouldReceive('consume')->andReturn(new \RdKafka\Message());
 
         $job = $this->queue->pop($queue);
 
@@ -83,8 +95,16 @@ class KafkaQueueTest extends TestCase
         $message = Mockery::mock(\RdKafka\Message::class);
         $message->err = RD_KAFKA_RESP_ERR__PARTITION_EOF;
 
+        $this->producer->shouldReceive('newTopic')->andReturn($this->topic);
+
         $this->consumer->shouldReceive('subscribe')->with([$queue]);
         $this->consumer->shouldReceive('consume')->andReturn($message);
+        $this->consumer->shouldReceive('newQueue')->andReturn($this->kafkaQueue);
+        $this->consumer->shouldReceive('newTopic')->andReturn($this->topic);
+
+        $this->topic->shouldReceive('consumeQueueStart');
+        $this->kafkaQueue->shouldReceive('consume');
+
 
         $job = $this->queue->pop($queue);
 
@@ -97,8 +117,15 @@ class KafkaQueueTest extends TestCase
         $message = Mockery::mock(\RdKafka\Message::class);
         $message->err = RD_KAFKA_RESP_ERR__TIMED_OUT;
 
+        $this->producer->shouldReceive('newTopic')->andReturn($this->topic);
+
         $this->consumer->shouldReceive('subscribe')->with([$queue]);
         $this->consumer->shouldReceive('consume')->andReturn($message);
+        $this->consumer->shouldReceive('newQueue')->andReturn($this->kafkaQueue);
+        $this->consumer->shouldReceive('newTopic')->andReturn($this->topic);
+
+        $this->topic->shouldReceive('consumeQueueStart');
+        $this->kafkaQueue->shouldReceive('consume');
 
         $job = $this->queue->pop($queue);
 
@@ -122,7 +149,7 @@ class KafkaQueueTest extends TestCase
 
     public function test_setCorrelationId()
     {
-        $id = function_exists('str_random') ? str_random() : \Illuminate\Support\Str::random();
+        $id = Str::random();
 
         $this->queue->setCorrelationId($id);
 

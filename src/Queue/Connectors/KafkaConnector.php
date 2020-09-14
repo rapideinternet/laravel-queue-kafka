@@ -46,7 +46,7 @@ class KafkaConnector implements ConnectorInterface
 
         /** @var Conf $conf */
         $conf = $this->container->makeWith('queue.kafka.conf', []);
-        if (true === $config['sasl_enable']) {
+        if (true === ($config['sasl_enable'] ?? false)) {
             $conf->set('sasl.mechanisms', 'PLAIN');
             $conf->set('sasl.username', $config['sasl_plain_username']);
             $conf->set('sasl.password', $config['sasl_plain_password']);

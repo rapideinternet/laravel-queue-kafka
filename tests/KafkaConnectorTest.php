@@ -19,7 +19,7 @@ class KafkaConnectorTest extends TestCase
 
         $container = Mockery::mock(\Illuminate\Container\Container::class);
 
-        $consumer = Mockery::mock(\RdKafka\KafkaConsumer::class);
+        $consumer = Mockery::mock(\RdKafka\Consumer::class);
 
         $topic_conf = Mockery::mock(\RdKafka\TopicConf::class);
         $topic_conf->shouldReceive('set');
