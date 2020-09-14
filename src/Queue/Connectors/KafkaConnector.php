@@ -4,9 +4,10 @@ namespace Rapide\LaravelQueueKafka\Queue\Connectors;
 
 use Illuminate\Container\Container;
 use Illuminate\Queue\Connectors\ConnectorInterface;
+use Illuminate\Support\Arr;
 use Rapide\LaravelQueueKafka\Queue\KafkaQueue;
 use RdKafka\Conf;
-use RdKafka\KafkaConsumer;
+use RdKafka\Consumer;
 use RdKafka\Producer;
 use RdKafka\TopicConf;
 
@@ -52,13 +53,16 @@ class KafkaConnector implements ConnectorInterface
             $conf->set('sasl.password', $config['sasl_plain_password']);
             $conf->set('ssl.ca.location', $config['ssl_ca_location']);
         }
-        $conf->set('group.id', function_exists('array_get') ? array_get($config, 'consumer_group_id', 'php-pubsub') : \Illuminate\Support\Arr::get($config, 'consumer_group_id', 'php-pubsub'));
+        $conf->set('group.id', Arr::get($config, 'consumer_group_id', 'php-pubsub'));
         $conf->set('metadata.broker.list', $config['brokers']);
         $conf->set('enable.auto.commit', 'false');
         $conf->set('offset.store.method', 'broker');
-        $conf->setDefaultTopicConf($topicConf);
+        $conf->set('log_level', (string)LOG_DEBUG);
+        $conf->set('debug', 'all');
 
-        /** @var KafkaConsumer $consumer */
+//        $conf->setDefaultTopicConf($topicConf);
+
+        /** @var Consumer $consumer */
         $consumer = $this->container->makeWith('queue.kafka.consumer', ['conf' => $conf]);
 
         return new KafkaQueue(

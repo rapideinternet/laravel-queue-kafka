@@ -47,7 +47,7 @@ class KafkaQueue extends Queue implements QueueContract
 
     /**
      * @param \RdKafka\Producer $producer
-     * @param \RdKafka\KafkaConsumer $consumer
+     * @param \RdKafka\Consumer $consumer
      * @param array $config
      */
     public function __construct(\RdKafka\Producer $producer, \RdKafka\Consumer $consumer, $config)
@@ -64,7 +64,6 @@ class KafkaQueue extends Queue implements QueueContract
      * Get the size of the queue.
      *
      * @param string $queue
-     *
      * @return int
      */
     public function size($queue = null)
