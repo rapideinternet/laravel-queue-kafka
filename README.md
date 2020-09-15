@@ -88,3 +88,8 @@ You can contribute to this package by discovering bugs and opening issues. Pleas
 #### Supported versions of Laravel 
 
 Tested on: [5.4, 5.5, 5.6, 5.7]
+
+#### New version is underway
+
+A version for Laravel 6,7,8 is underway. 
+Also supporting the new RdKafka library
