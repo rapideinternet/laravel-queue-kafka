@@ -105,6 +105,7 @@ class KafkaQueue extends Queue implements QueueContract
             $pushRawCorrelationId = $this->getCorrelationId();
 
             $topic->produce(RD_KAFKA_PARTITION_UA, 0, $payload, $pushRawCorrelationId);
+            $this->producer->poll(0);
 
             return $pushRawCorrelationId;
         } catch (ErrorException $exception) {
@@ -146,14 +147,15 @@ class KafkaQueue extends Queue implements QueueContract
             if (!array_key_exists($queue, $this->queues)) {
                 $this->queues[$queue] = $this->consumer->newQueue();
                 $topicConf = new \RdKafka\TopicConf();
-                $topicConf->set('auto.offset.reset', 'largest');
+                $topicConf->set('auto.commit.interval.ms', 100);
+                $topicConf->set('auto.offset.reset', 'smallest');
+//                $topicConf->set('auto.offset.reset', 'largest');
 
                 $this->topics[$queue] = $this->consumer->newTopic($queue, $topicConf);
-                $this->topics[$queue]->consumeQueueStart(0, RD_KAFKA_OFFSET_STORED, $this->queues[$queue]);
+                $this->queues[$queue]->consumeQueueStart(0, RD_KAFKA_OFFSET_STORED);
             }
 
-
-            $message = $this->queues[$queue]->consume(0, 1000);
+            $message = $this->queues[$queue]->consume(0, 120 * 1000);
 
             if ($message === null) {
                 return null;
@@ -268,5 +270,10 @@ class KafkaQueue extends Queue implements QueueContract
     public function getConsumer()
     {
         return $this->consumer;
+    }
+
+    public function __destruct()
+    {
+        $this->producer->flush(500);
     }
 }
