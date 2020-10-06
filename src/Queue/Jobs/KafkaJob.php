@@ -142,11 +142,7 @@ class KafkaJob extends Job implements JobContract
 
         $data = $body['data'];
 
-        if ($delay > 0) {
-            $this->connection->later($delay, $job, $data, $this->getQueue());
-        } else {
-            $this->connection->push($job, $data, $this->getQueue());
-        }
+        $this->connection->releaseBack($delay, $job, $data, $this->getQueue(), $this->attempts());
     }
 
     /**
