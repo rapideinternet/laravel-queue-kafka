@@ -52,6 +52,7 @@ class KafkaQueueTest extends TestCase
         $this->topic->shouldReceive('produce');
 
         $this->producer->shouldReceive('newTopic')->andReturn($this->topic);
+        $this->producer->shouldReceive('poll');
 
         $correlationId = $this->queue->push($job, $data);
 
@@ -82,6 +83,7 @@ class KafkaQueueTest extends TestCase
         $this->consumer->shouldReceive('newTopic')->andReturn($this->topic);
 
         $this->topic->shouldReceive('consumeQueueStart');
+
         $this->kafkaQueue->shouldReceive('consume')->andReturn(new \RdKafka\Message());
 
         $job = $this->queue->pop($queue);

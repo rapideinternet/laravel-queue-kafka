@@ -157,7 +157,7 @@ class KafkaQueue extends Queue implements QueueContract
             }
 
             //TODO: kafka version check, see https://github.com/rapideinternet/laravel-queue-kafka/pull/33
-            $message = $this->topics[$queue]->consume(0, 120 * 1000);
+            $message = $this->queues[$queue]->consume(0, 120 * 1000);
 
             if ($message === null) {
                 return null;
