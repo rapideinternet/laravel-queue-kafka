@@ -167,7 +167,8 @@ class KafkaQueue extends Queue implements QueueContract
                 case RD_KAFKA_RESP_ERR_NO_ERROR:
                     return new KafkaJob(
                         $this->container,
-                        $this, $message,
+                        $this,
+                        $message,
                         $this->connectionName,
                         $queue ?: $this->defaultQueue,
                         $this->topics[$queue]
