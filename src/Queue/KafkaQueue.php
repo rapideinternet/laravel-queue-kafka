@@ -166,8 +166,11 @@ class KafkaQueue extends Queue implements QueueContract
             switch ($message->err) {
                 case RD_KAFKA_RESP_ERR_NO_ERROR:
                     return new KafkaJob(
-                        $this->container, $this, $message,
-                        $this->connectionName, $queue ?: $this->defaultQueue, $this->topics[$queue]
+                        $this->container,
+                        $this, $message,
+                        $this->connectionName,
+                        $queue ?: $this->defaultQueue,
+                        $this->topics[$queue]
                     );
                 case RD_KAFKA_RESP_ERR__PARTITION_EOF:
                 case RD_KAFKA_RESP_ERR__TIMED_OUT:
