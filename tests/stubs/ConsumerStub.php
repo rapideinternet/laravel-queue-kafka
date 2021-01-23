@@ -2,5 +2,4 @@
 
 class ConsumerStub extends \RdKafka\KafkaConsumer
 {
-
 }

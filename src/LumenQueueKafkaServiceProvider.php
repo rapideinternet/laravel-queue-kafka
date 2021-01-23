@@ -12,7 +12,8 @@ class LumenQueueKafkaServiceProvider extends LaravelQueueKafkaServiceProvider
         parent::boot();
 
         $this->mergeConfigFrom(
-            __DIR__ . '/../config/kafka.php', 'queue.connections.kafka'
+            __DIR__ . '/../config/kafka.php',
+            'queue.connections.kafka'
         );
     }
 }

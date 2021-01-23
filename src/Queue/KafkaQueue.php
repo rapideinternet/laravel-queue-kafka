@@ -64,6 +64,7 @@ class KafkaQueue extends Queue implements QueueContract
      * Get the size of the queue.
      *
      * @param string $queue
+     *
      * @return int
      */
     public function size($queue = null)
@@ -122,8 +123,8 @@ class KafkaQueue extends Queue implements QueueContract
      * @param string $queue
      *
      * @return mixed
-     * @throws QueueKafkaException
      *
+     * @throws QueueKafkaException
      */
     public function later($delay, $job, $data = '', $queue = null)
     {

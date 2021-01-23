@@ -105,7 +105,6 @@ class KafkaQueueTest extends TestCase
         $this->topic->shouldReceive('consumeQueueStart');
         $this->kafkaQueue->shouldReceive('consume');
 
-
         $job = $this->queue->pop($queue);
 
         $this->assertNull($job);
