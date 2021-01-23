@@ -22,6 +22,8 @@ class KafkaQueueTest extends TestCase
         parent::setUp();
 
         $this->producer = Mockery::mock(\RdKafka\Producer::class);
+        $this->producer->shouldReceive('flush'); //Destructor
+
         $this->consumer = Mockery::mock(\RdKafka\Consumer::class);
         $this->container = Mockery::mock(\Illuminate\Container\Container::class);
         $this->topic = Mockery::mock(\RdKafka\Topic::class);
