@@ -152,10 +152,11 @@ class KafkaQueue extends Queue implements QueueContract
 //                $topicConf->set('auto.offset.reset', 'largest');
 
                 $this->topics[$queue] = $this->consumer->newTopic($queue, $topicConf);
-                $this->queues[$queue]->consumeQueueStart(0, RD_KAFKA_OFFSET_STORED);
+                $this->topics[$queue]->consumeQueueStart(0, RD_KAFKA_OFFSET_BEGINNING, $this->queues[$queue]);
             }
 
-            $message = $this->queues[$queue]->consume(0, 120 * 1000);
+            //TODO: kafka version check, see https://github.com/rapideinternet/laravel-queue-kafka/pull/33
+            $message = $this->topics[$queue]->consume(0, 120 * 1000);
 
             if ($message === null) {
                 return null;

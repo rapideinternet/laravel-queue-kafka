@@ -37,14 +37,6 @@ class KafkaConnector implements ConnectorInterface
      */
     public function connect(array $config)
     {
-        /** @var Producer $producer */
-        $producer = $this->container->makeWith('queue.kafka.producer', []);
-        $producer->addBrokers($config['brokers']);
-
-        /** @var TopicConf $topicConf */
-        $topicConf = $this->container->makeWith('queue.kafka.topic_conf', []);
-        $topicConf->set('auto.offset.reset', 'largest');
-
         /** @var Conf $conf */
         $conf = $this->container->makeWith('queue.kafka.conf', []);
         if (true === ($config['sasl_enable'] ?? false)) {
@@ -59,6 +51,15 @@ class KafkaConnector implements ConnectorInterface
         $conf->set('offset.store.method', 'broker');
         $conf->set('log_level', (string)LOG_DEBUG);
         $conf->set('debug', 'all');
+
+        /** @var Producer $producer */
+        $producer = $this->container->makeWith('queue.kafka.producer', ['conf' => $conf]);
+        $producer->addBrokers($config['brokers']);
+
+        /** @var TopicConf $topicConf */
+        $topicConf = $this->container->makeWith('queue.kafka.topic_conf', []);
+        $topicConf->set('auto.offset.reset', 'largest');
+
 
 //        $conf->setDefaultTopicConf($topicConf);
 
