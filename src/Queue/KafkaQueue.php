@@ -153,7 +153,7 @@ class KafkaQueue extends Queue implements QueueContract
             }
 
 
-            $message = $this->queues[$queue]->consume(0, 1000);
+            $message = $this->queues[$queue]->consume(1000);
 
             if ($message === null) {
                 return null;
