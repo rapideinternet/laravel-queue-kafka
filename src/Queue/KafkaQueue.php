@@ -47,7 +47,7 @@ class KafkaQueue extends Queue implements QueueContract
 
     /**
      * @param \RdKafka\Producer $producer
-     * @param \RdKafka\KafkaConsumer $consumer
+     * @param \RdKafka\Consumer $consumer
      * @param array $config
      */
     public function __construct(\RdKafka\Producer $producer, \RdKafka\Consumer $consumer, $config)
@@ -94,9 +94,9 @@ class KafkaQueue extends Queue implements QueueContract
      * @param string $queue
      * @param array $options
      *
+     * @return mixed
      * @throws QueueKafkaException
      *
-     * @return mixed
      */
     public function pushRaw($payload, $queue = null, array $options = [])
     {
@@ -106,6 +106,7 @@ class KafkaQueue extends Queue implements QueueContract
             $pushRawCorrelationId = $this->getCorrelationId();
 
             $topic->produce(RD_KAFKA_PARTITION_UA, 0, $payload, $pushRawCorrelationId);
+            $this->producer->poll(0);
 
             return $pushRawCorrelationId;
         } catch (ErrorException $exception) {
@@ -121,9 +122,9 @@ class KafkaQueue extends Queue implements QueueContract
      * @param mixed $data
      * @param string $queue
      *
-     * @throws QueueKafkaException
-     *
      * @return mixed
+     *
+     * @throws QueueKafkaException
      */
     public function later($delay, $job, $data = '', $queue = null)
     {
@@ -136,9 +137,9 @@ class KafkaQueue extends Queue implements QueueContract
      *
      * @param string|null $queue
      *
+     * @return \Illuminate\Queue\Jobs\Job|null
      * @throws QueueKafkaException
      *
-     * @return \Illuminate\Queue\Jobs\Job|null
      */
     public function pop($queue = null)
     {
@@ -147,13 +148,16 @@ class KafkaQueue extends Queue implements QueueContract
             if (!array_key_exists($queue, $this->queues)) {
                 $this->queues[$queue] = $this->consumer->newQueue();
                 $topicConf = new \RdKafka\TopicConf();
-                $topicConf->set('auto.offset.reset', 'largest');
+                $topicConf->set('auto.commit.interval.ms', 100);
+                $topicConf->set('auto.offset.reset', 'smallest');
+//                $topicConf->set('auto.offset.reset', 'largest');
 
                 $this->topics[$queue] = $this->consumer->newTopic($queue, $topicConf);
                 $this->topics[$queue]->consumeQueueStart(0, RD_KAFKA_OFFSET_STORED, $this->queues[$queue]);
             }
 
-            $message = $this->queues[$queue]->consume(1000);
+            //TODO: kafka version check, see https://github.com/rapideinternet/laravel-queue-kafka/pull/33
+            $message = $this->queues[$queue]->consume(0, 120 * 1000);
 
             if ($message === null) {
                 return null;
@@ -162,8 +166,12 @@ class KafkaQueue extends Queue implements QueueContract
             switch ($message->err) {
                 case RD_KAFKA_RESP_ERR_NO_ERROR:
                     return new KafkaJob(
-                        $this->container, $this, $message,
-                        $this->connectionName, $queue ?: $this->defaultQueue, $this->topics[$queue]
+                        $this->container,
+                        $this,
+                        $message,
+                        $this->connectionName,
+                        $queue ?: $this->defaultQueue,
+                        $this->topics[$queue]
                     );
                 case RD_KAFKA_RESP_ERR__PARTITION_EOF:
                 case RD_KAFKA_RESP_ERR__TIMED_OUT:
@@ -229,9 +237,9 @@ class KafkaQueue extends Queue implements QueueContract
     /**
      * Create a payload array from the given job and data.
      *
-     * @param  string $job
-     * @param  string $queue
-     * @param  mixed $data
+     * @param string $job
+     * @param string $queue
+     * @param mixed $data
      *
      * @return array
      */
@@ -268,5 +276,10 @@ class KafkaQueue extends Queue implements QueueContract
     public function getConsumer()
     {
         return $this->consumer;
+    }
+
+    public function __destruct()
+    {
+        $this->producer->flush(500);
     }
 }

@@ -14,7 +14,8 @@ class LaravelQueueKafkaServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(
-            __DIR__ . '/../config/kafka.php', 'queue.connections.kafka'
+            __DIR__ . '/../config/kafka.php',
+            'queue.connections.kafka'
         );
 
         $this->registerDependencies();
@@ -43,8 +44,8 @@ class LaravelQueueKafkaServiceProvider extends ServiceProvider
             return new \RdKafka\TopicConf();
         });
 
-        $this->app->bind('queue.kafka.producer', function () {
-            return new \RdKafka\Producer();
+        $this->app->bind('queue.kafka.producer', function ($app, $parameters) {
+            return new \RdKafka\Producer($parameters['conf'] ?? null);
         });
 
         $this->app->bind('queue.kafka.conf', function () {

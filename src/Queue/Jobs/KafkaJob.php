@@ -5,18 +5,20 @@ namespace Rapide\LaravelQueueKafka\Queue\Jobs;
 use Exception;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Queue\Job as JobContract;
-use Illuminate\Database\DetectsDeadlocks;
+use Illuminate\Database\DetectsConcurrencyErrors;
+use Illuminate\Database\DetectsLostConnections;
 use Illuminate\Queue\Jobs\Job;
 use Illuminate\Queue\Jobs\JobName;
 use Illuminate\Support\Str;
 use Rapide\LaravelQueueKafka\Exceptions\QueueKafkaException;
 use Rapide\LaravelQueueKafka\Queue\KafkaQueue;
-use RdKafka\ConsumerTopic;
 use RdKafka\Message;
+use RdKafka\Topic;
 
 class KafkaJob extends Job implements JobContract
 {
-    use DetectsDeadlocks;
+    use DetectsConcurrencyErrors;
+    use DetectsLostConnections;
 
     /**
      * @var KafkaQueue
@@ -44,9 +46,9 @@ class KafkaJob extends Job implements JobContract
      * @param Message $message
      * @param string $connectionName
      * @param string $queue
-     * @param ConsumerTopic $topic
+     * @param Topic $topic
      */
-    public function __construct(Container $container, KafkaQueue $connection, Message $message, $connectionName, $queue, ConsumerTopic $topic)
+    public function __construct(Container $container, KafkaQueue $connection, Message $message, $connectionName, $queue, Topic $topic)
     {
         $this->container = $container;
         $this->connection = $connection;
@@ -90,7 +92,7 @@ class KafkaJob extends Job implements JobContract
      */
     public function attempts()
     {
-        return (int) ($this->payload()['attempts']) + 1;
+        return (int)($this->payload()['attempts']) + 1;
     }
 
     /**
@@ -174,9 +176,9 @@ class KafkaJob extends Job implements JobContract
      *
      * @param array $body
      *
+     * @return mixed
      * @throws Exception
      *
-     * @return mixed
      */
     private function unserialize(array $body)
     {
@@ -184,7 +186,8 @@ class KafkaJob extends Job implements JobContract
             return unserialize($body['data']['command']);
         } catch (Exception $exception) {
             if (
-                $this->causedByDeadlock($exception)
+                $this->causedByConcurrencyError($exception)
+                || $this->causedByLostConnection($exception)
                 || Str::contains($exception->getMessage(), ['detected deadlock'])
             ) {
                 sleep($this->connection->getConfig()['sleep_on_deadlock']);

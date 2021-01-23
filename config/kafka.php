@@ -24,7 +24,7 @@ return [
     /*
      * Address of the Kafka broker
      */
-    'brokers' => env('KAFKA_BROKERS', 'localhost'),
+    'brokers' => env('KAFKA_BROKERS', '127.0.0.1:9092'),
 
     /*
      * Determine the number of seconds to sleep if there's an error communicating with kafka
@@ -48,12 +48,12 @@ return [
     'ssl_ca_location' => '',
 
     /*
-     * SASL username for use with the PLAIN and SASL-SCRAM-.. mechanisms 
+     * SASL username for use with the PLAIN and SASL-SCRAM-.. mechanisms
      */
     'sasl_plain_username' => env('KAFKA_SASL_PLAIN_USERNAME'),
 
     /*
-     * SASL password for use with the PLAIN and SASL-SCRAM-.. mechanism 
+     * SASL password for use with the PLAIN and SASL-SCRAM-.. mechanism
      */
     'sasl_plain_password' => env('KAFKA_SASL_PLAIN_PASSWORD'),
 ];
