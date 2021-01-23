@@ -35,7 +35,6 @@ enabled:
   - no_trailing_comma_in_list_call
   - no_trailing_comma_in_singleline_array
   - no_unneeded_control_parentheses
-  - no_unreachable_default_argument_value
   - no_unused_imports
   - no_useless_return
   - no_whitespace_before_comma_in_array
