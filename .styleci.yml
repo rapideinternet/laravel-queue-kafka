@@ -59,7 +59,6 @@ enabled:
   - phpdoc_types
   - phpdoc_var_without_name
   - print_to_echo
-  - self_accessor
   - short_array_syntax
   - single_blank_line_before_namespace
   - single_quote
